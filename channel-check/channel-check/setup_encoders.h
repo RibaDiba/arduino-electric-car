@@ -23,32 +23,28 @@ void debug_magencoders() {
 
     for (uint8_t t = 0; t < 8; t++) {
         tcaselect(t);
+        delay(5); // Allow time for channel switching
         Serial.print("TCA Port #");
         Serial.println(t);
 
-        for (uint8_t addr = 0; addr <= 127; addr++) {
+        for (uint8_t addr = 1; addr < 127; addr++) {
             if (addr == TCAADDR) continue;
 
             Wire.beginTransmission(addr);
-            if (!Wire.endTransmission()) {
-                Serial.print("Found I2C 0x");
+            if (Wire.endTransmission() == 0) {
+                Serial.print("Found I2C device at 0x");
                 Serial.println(addr, HEX);
-
                 ifFound[t] = true;
             }
         }
     }
 
-    for (int i = 0; i < sizeof(ifFound); i++) {
-        if (ifFound[i] == true) {
-            // do nothing
-        } else {
-            Serial.println("Unable to Access Encoders");
-            return;
+    for (int i = 0; i < (sizeof(ifFound) / sizeof(ifFound[0])); i++) {
+        if (!ifFound[i]) {
+            Serial.println("Unable to Access Encoders on Channel: " + String(i));
         }
     }
 
-    Serial.println("Setup sucessful!");
-
-    return;
+    Serial.println("Setup successful if no errors above!");
 }
+
