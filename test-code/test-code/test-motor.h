@@ -1,39 +1,22 @@
-// [dirPin, PWMPin]
-int pins[4][2] = {
-     //{25,26},
-     //{14,12},
-     //{16,4},
-     //{15,13}
-     {17,18},
-     {19,26},
-     {14,27},
-     {12,13}
-};
+#include "CytronMotorDriver.h"
 
-// setup motors 
-void setupMotors() {
+// (PWI_DIR, PWM, DIR)
+CytronMD motor1(PWM_DIR, 17, 16);
+CytronMD motor2(PWM_DIR, 26, 15);
+CytronMD motor3(PWM_DIR, 13, 12);
+CytronMD motor4(PWM_DIR, 27, 14);
 
-     int rows = sizeof(pins) / sizeof(pins[0]);     
-     int cols = sizeof(pins[0]) / sizeof(pins[0][0]); 
-
-     for (int i = 0; i < rows; i++) {
-          for (int j = 0; j < cols; j++) {
-               pinMode(pins[i][j], OUTPUT);
-          }
-     }
-}
+CytronMD motors[] = {motor1, motor2, motor3, motor4};
 
 // this will spin each motor 
 void spinEach() {
-     for (int i = 0; i < sizeof(pins) / sizeof(pins[0]); i++) {
-          analogWrite(pins[i][0], HIGH);
-          analogWrite(pins[i][1], 250);
-
-          Serial.println("Testing to motor: ");
-          Serial.print(i);
-
-          delay(2000);
-
-          analogWrite(pins[i][1], 0);
+     for (int i = 0; i < 4; i++) {
+          if (i == 0 || i == 1) {
+            motors[i].setSpeed(-220);
+          } else {
+            motors[i].setSpeed(220);  
+          }
+          \delay(1000); 
+          motors[i].setSpeed(0); 
      }
 }
